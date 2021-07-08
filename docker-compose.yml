@@ -1,0 +1,41 @@
+version: "3.2"
+services:
+    web:
+        container_name: web
+        build:
+            context: .
+            dockerfile: ./dockerfile
+        links:
+            - mysql:mysql
+        ports:
+            - "80:80"
+        volumes:
+            - ./www/:/var/www/html/
+            - ./config/php.ini:/usr/local/etc/php/php.ini
+            - ./config/vhost.conf:/etc/apache2/conf-enabled/vhost.conf
+    mysql:
+        container_name: mysql
+        image: mysql:5.7
+        ports:
+            - "3306:3306"
+        environment:
+            - MYSQL_ROOT_PASSWORD=123456
+            - MYSQL_PASSWORD=123456
+            - MYSQL_USER=db_user
+        volumes:
+            - ./mysql:/var/lib/mysql
+    phpmyadmin:
+        container_name: phpmyadmin
+        image: phpmyadmin/phpmyadmin
+        links:
+            - mysql:mysql
+        environment:
+            - PMA_ARBITRARY=1
+        ports:
+            - "8080:80"
+    smtp:
+        container_name: mailhog
+        image: mailhog/mailhog
+        ports:
+            - "1025:1025"
+            - "8025:8025"
